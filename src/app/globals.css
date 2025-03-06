@@ -2,20 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  :root {
-    --background: 10 15 28;
-    --foreground: 226 232 240;
+:root {
+  --background: #000000;
+  --foreground: #ffffff;
+}
+
+.dark {
+  --background: #000000;
+  --foreground: #ffffff;
+}
+
+.light {
+  --background: #ffffff;
+  --foreground: #000000;
+}
+
+body {
+  @apply bg-background text-foreground;
+}
+
+@layer components {
+  .page-title {
+    @apply text-4xl font-bold mb-8;
   }
 
-  .light {
-    --background: 226 232 240;
-    --foreground: 10 15 28;
+  .btn-primary {
+    @apply px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors;
   }
 
-  .dark {
-    --background: 10 15 28;
-    --foreground: 226 232 240;
+  .btn-secondary {
+    @apply px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors;
+  }
+
+  .card {
+    @apply p-6 rounded-xl bg-gray-800 shadow-xl;
   }
 }
 

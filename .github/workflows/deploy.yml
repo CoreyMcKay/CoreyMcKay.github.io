@@ -33,45 +33,32 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
-      - name: Clean install
+      - name: Install dependencies
         run: |
-          rm -rf node_modules
-          rm -f package-lock.json
-
-      - name: Install core dependencies
-        run: |
-          echo "Installing core dependencies..."
-          npm install --save-exact next@14.1.0 react@18.2.0 react-dom@18.2.0
-          echo "Core dependencies installed."
-
-      - name: Install Tailwind and PostCSS
-        run: |
+          echo "Installing dependencies..."
+          npm install
           echo "Installing Tailwind and PostCSS..."
-          npm install --save-dev --save-exact tailwindcss@3.4.1 postcss@8.4.33 autoprefixer@10.4.17
-          echo "Creating Tailwind config..."
-          cat tailwind.config.js
-          echo "Creating PostCSS config..."
-          cat postcss.config.js
+          npm install -D tailwindcss@3.4.1 postcss@8.4.33 autoprefixer@10.4.17
+          echo "Dependencies installed. Verifying installation..."
+          npm list tailwindcss postcss autoprefixer
+          echo "Checking node_modules..."
+          ls -la node_modules
+          echo "Checking Tailwind specifically..."
+          find node_modules -name "tailwindcss"
 
-      - name: Install remaining dependencies
+      - name: Setup Tailwind
         run: |
-          echo "Installing remaining dependencies..."
-          npm install --save-exact
-          echo "All dependencies installed."
-
-      - name: Verify Tailwind setup
-        run: |
-          echo "Verifying Tailwind installation..."
-          ls -la node_modules/tailwindcss
-          echo "Checking PostCSS config..."
-          cat postcss.config.js
           echo "Checking Tailwind config..."
-          cat tailwind.config.js
+          test -f tailwind.config.js && echo "Tailwind config exists" || echo "Tailwind config missing"
+          echo "Checking PostCSS config..."
+          test -f postcss.config.js && echo "PostCSS config exists" || echo "PostCSS config missing"
+          echo "Current directory contents:"
+          ls -la
 
       - name: Build with Next.js
         run: |
           echo "Starting Next.js build..."
-          npm run build
+          NODE_ENV=production npm run build
           touch out/.nojekyll
           echo "Build completed."
 
