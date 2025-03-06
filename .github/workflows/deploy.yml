@@ -45,11 +45,12 @@ jobs:
           npm install --no-package-lock --legacy-peer-deps -D @types/node@latest @types/react@latest @types/react-dom@latest typescript@latest
           npm install --no-package-lock --legacy-peer-deps -D eslint@latest eslint-config-next@latest @typescript-eslint/eslint-plugin@latest @typescript-eslint/parser@latest
 
-      - name: Create Tailwind config if missing
+      - name: Setup Tailwind
         run: |
-          if [ ! -f tailwind.config.js ]; then
-            npx tailwindcss init -p
-          fi
+          echo "Creating Tailwind config..."
+          npx tailwindcss init -p
+          echo "Tailwind config created."
+          cat tailwind.config.js
 
       - name: Verify installations
         run: |
