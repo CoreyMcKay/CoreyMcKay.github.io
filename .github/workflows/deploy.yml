@@ -33,27 +33,45 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
-      - name: Install dependencies
+      - name: Clean install
         run: |
-          echo "Installing all dependencies..."
-          npm install
-          echo "All dependencies installed."
-          echo "Verifying Tailwind installation..."
-          npm list tailwindcss postcss autoprefixer
+          rm -rf node_modules
+          rm -f package-lock.json
 
-      - name: Verify installations
+      - name: Install core dependencies
         run: |
-          echo "Checking dependency versions:"
-          npm list react react-dom next tailwindcss framer-motion
-          echo "Checking node_modules structure:"
-          ls -la node_modules/tailwindcss || echo "Tailwind not found"
-          ls -la node_modules/framer-motion || echo "Framer Motion not found"
-          ls -la node_modules/@heroicons || echo "Heroicons not found"
+          echo "Installing core dependencies..."
+          npm install --save-exact next@14.1.0 react@18.2.0 react-dom@18.2.0
+          echo "Core dependencies installed."
+
+      - name: Install Tailwind and PostCSS
+        run: |
+          echo "Installing Tailwind and PostCSS..."
+          npm install --save-dev --save-exact tailwindcss@3.4.1 postcss@8.4.33 autoprefixer@10.4.17
+          echo "Creating Tailwind config..."
+          cat tailwind.config.js
+          echo "Creating PostCSS config..."
+          cat postcss.config.js
+
+      - name: Install remaining dependencies
+        run: |
+          echo "Installing remaining dependencies..."
+          npm install --save-exact
+          echo "All dependencies installed."
+
+      - name: Verify Tailwind setup
+        run: |
+          echo "Verifying Tailwind installation..."
+          ls -la node_modules/tailwindcss
+          echo "Checking PostCSS config..."
+          cat postcss.config.js
+          echo "Checking Tailwind config..."
+          cat tailwind.config.js
 
       - name: Build with Next.js
         run: |
           echo "Starting Next.js build..."
-          NODE_ENV=production npm run build
+          npm run build
           touch out/.nojekyll
           echo "Build completed."
 
