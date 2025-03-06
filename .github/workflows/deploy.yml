@@ -33,22 +33,22 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
+      - name: Clean install
+        run: |
+          rm -rf node_modules
+          rm -f package-lock.json
+
       - name: Install dependencies
         run: |
-          echo "Installing core dependencies..."
-          npm install --no-package-lock --legacy-peer-deps next@14.1.0 react@18.2.0 react-dom@18.2.0
-          echo "Installing Tailwind and PostCSS..."
-          npm install --no-package-lock --legacy-peer-deps -D tailwindcss@3.4.1 postcss@8.4.33 autoprefixer@10.4.17 postcss-import@16.0.0
-          echo "Installing remaining dependencies..."
-          npm install --no-package-lock --legacy-peer-deps
+          echo "Installing all dependencies..."
+          npm install --legacy-peer-deps
+          echo "Dependencies installed."
 
-      - name: Verify installation
+      - name: Setup Tailwind
         run: |
-          echo "Checking installed packages..."
-          npm list tailwindcss postcss autoprefixer
-          echo "Checking node_modules..."
-          ls -la node_modules/tailwindcss || echo "Tailwind not found"
-          ls -la node_modules/postcss || echo "PostCSS not found"
+          echo "Setting up Tailwind..."
+          npx tailwindcss init -p
+          echo "Tailwind setup complete."
 
       - name: Build with Next.js
         run: |
