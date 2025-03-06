@@ -17,7 +17,9 @@ export default function Navbar() {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50">
-      <div className="absolute inset-0 bg-black/10 backdrop-blur-md border-b border-primary-500/10" />
+      <div className="absolute inset-0 bg-black/5 backdrop-blur-md border-b border-primary-500/10">
+        <div className="absolute inset-0 bg-gradient-shine bg-[length:200%_200%] animate-glow opacity-5" />
+      </div>
       <div className="container relative mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -25,14 +27,14 @@ export default function Navbar() {
             href="/" 
             className="group relative px-3 py-2"
           >
-            <span className="relative z-10 text-xl font-bold bg-gradient-to-r from-primary-400 to-primary-600 bg-clip-text text-transparent group-hover:opacity-80 transition-opacity">
+            <span className="relative z-10 text-xl font-bold bg-gradient-to-r from-primary-400 to-primary-600 bg-clip-text text-transparent group-hover:opacity-80 transition-all duration-300">
               CM~
             </span>
             <motion.div
-              className="absolute inset-0 bg-primary-500/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute inset-0 bg-gradient-to-r from-primary-500/10 to-transparent rounded-lg opacity-0 group-hover:opacity-100"
               initial={false}
               animate={{ scale: [0.95, 1], opacity: [0, 1] }}
-              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ duration: 0.2 }}
             />
           </Link>
 
@@ -46,20 +48,20 @@ export default function Navbar() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`group relative px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200
+                  className={`group relative px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300
                     ${isActive ? 'text-primary-400' : 'text-slate-300 hover:text-primary-400'}`}
                 >
                   <span className="relative z-10 flex items-center space-x-2">
-                    <Icon className={`w-5 h-5 transition-transform group-hover:scale-110 ${isActive ? 'text-primary-400' : ''}`} />
+                    <Icon className={`w-5 h-5 transition-transform duration-300 group-hover:scale-110 ${isActive ? 'text-primary-400' : ''}`} />
                     <span className="hidden sm:inline">{item.name}</span>
                   </span>
                   
                   {/* Hover Effect */}
                   <motion.div
-                    className="absolute inset-0 bg-primary-500/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute inset-0 bg-gradient-to-r from-primary-500/10 to-transparent rounded-lg opacity-0 group-hover:opacity-100"
                     initial={false}
                     animate={{ scale: [0.95, 1], opacity: [0, 1] }}
-                    exit={{ scale: 0.95, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
                   />
                   
                   {/* Active Indicator */}
@@ -72,7 +74,9 @@ export default function Navbar() {
                         stiffness: 350,
                         damping: 30
                       }}
-                    />
+                    >
+                      <div className="absolute inset-0 bg-gradient-shine bg-[length:200%_200%] animate-glow opacity-10" />
+                    </motion.div>
                   )}
                 </Link>
               )
