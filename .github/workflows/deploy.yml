@@ -19,6 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NODE_ENV: production
+      NEXT_TELEMETRY_DISABLED: 1
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -32,19 +33,32 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
-      - name: Install dependencies
+      - name: Clean install
         run: |
-          npm install
-          npm install -D tailwindcss@latest postcss@latest autoprefixer@latest
-          npm list tailwindcss postcss autoprefixer
-          ls -la src/components/
+          rm -rf node_modules
+          rm -f package-lock.json
 
-      - name: Verify paths
+      - name: Install core dependencies
         run: |
-          echo "Checking for Navbar component:"
-          ls -la src/components/Navbar.tsx || echo "Navbar not found"
-          echo "Checking for ThemeProviderWrapper component:"
-          ls -la src/components/ThemeProviderWrapper.tsx || echo "ThemeProviderWrapper not found"
+          npm install next@latest react@latest react-dom@latest
+
+      - name: Install dev dependencies
+        run: |
+          npm install -D typescript @types/node @types/react @types/react-dom
+          npm install -D tailwindcss@latest postcss@latest autoprefixer@latest
+          npm install -D @heroicons/react framer-motion next-themes
+
+      - name: Verify Tailwind installation
+        run: |
+          echo "Checking Tailwind installation:"
+          npm list tailwindcss
+          ls -la node_modules/tailwindcss
+
+      - name: Create Tailwind config if missing
+        run: |
+          if [ ! -f tailwind.config.ts ]; then
+            npx tailwindcss init -p
+          fi
 
       - name: Build with Next.js
         run: |
