@@ -33,18 +33,32 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
+      - name: Clean install
+        run: |
+          echo "Cleaning node_modules..."
+          rm -rf node_modules
+          rm -f package-lock.json
+
       - name: Install dependencies
         run: |
           echo "Installing dependencies..."
-          npm install
-          echo "Installing PostCSS and Tailwind dependencies..."
-          npm install -D tailwindcss@3.4.1 postcss@8.4.33 autoprefixer@10.4.17 postcss-import@16.0.0
-          echo "Dependencies installed. Verifying installation..."
-          npm list tailwindcss postcss autoprefixer postcss-import
-          echo "Checking node_modules..."
-          ls -la node_modules/tailwindcss
+          npm install --legacy-peer-deps
+          echo "Installing dev dependencies..."
+          npm install --save-dev --legacy-peer-deps tailwindcss@3.4.1 postcss@8.4.33 autoprefixer@10.4.17 postcss-import@16.0.0
+          echo "Dependencies installed."
+
+      - name: Verify Tailwind setup
+        run: |
+          echo "Verifying Tailwind installation..."
+          npm list tailwindcss
+          echo "Creating Tailwind config if missing..."
+          if [ ! -f tailwind.config.js ]; then
+            npx tailwindcss init
+          fi
           echo "Checking PostCSS config..."
           cat postcss.config.js
+          echo "Checking node_modules structure..."
+          ls -la node_modules/tailwindcss || echo "Tailwind not found"
 
       - name: Build with Next.js
         run: |
