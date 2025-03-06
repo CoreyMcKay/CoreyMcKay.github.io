@@ -38,27 +38,17 @@ jobs:
           rm -rf node_modules
           rm -f package-lock.json
 
-      - name: Install core dependencies
+      - name: Install dependencies
         run: |
-          npm install next@latest react@latest react-dom@latest
+          npm install --legacy-peer-deps next@latest react@18.2.0 react-dom@18.2.0
+          npm install --legacy-peer-deps -D typescript@latest @types/node@latest @types/react@latest @types/react-dom@latest
+          npm install --legacy-peer-deps -D tailwindcss@latest postcss@latest autoprefixer@latest
+          npm install --legacy-peer-deps -D @heroicons/react@latest framer-motion@latest next-themes@latest
 
-      - name: Install dev dependencies
+      - name: Verify installations
         run: |
-          npm install -D typescript @types/node @types/react @types/react-dom
-          npm install -D tailwindcss@latest postcss@latest autoprefixer@latest
-          npm install -D @heroicons/react framer-motion next-themes
-
-      - name: Verify Tailwind installation
-        run: |
-          echo "Checking Tailwind installation:"
-          npm list tailwindcss
-          ls -la node_modules/tailwindcss
-
-      - name: Create Tailwind config if missing
-        run: |
-          if [ ! -f tailwind.config.ts ]; then
-            npx tailwindcss init -p
-          fi
+          echo "Checking dependency versions:"
+          npm list react react-dom next tailwindcss framer-motion
 
       - name: Build with Next.js
         run: |
