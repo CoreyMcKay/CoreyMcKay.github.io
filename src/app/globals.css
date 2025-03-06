@@ -4,19 +4,28 @@
 
 @layer base {
   :root {
-    --background: 255 255 255;
-    --foreground: 15 23 42;
+    --background: 10 15 28;
+    --foreground: 226 232 240;
+  }
+
+  .light {
+    --background: 226 232 240;
+    --foreground: 10 15 28;
   }
 
   .dark {
-    --background: 15 23 42;
-    --foreground: 255 255 255;
+    --background: 10 15 28;
+    --foreground: 226 232 240;
   }
 }
 
 @layer base {
   body {
-    @apply bg-background text-foreground;
+    @apply text-slate-200 antialiased;
+  }
+
+  ::selection {
+    @apply bg-primary-500 bg-opacity-30 text-primary-200;
   }
 }
 
@@ -26,14 +35,41 @@
   }
 
   .btn-primary {
-    @apply px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors;
+    @apply px-4 py-2 bg-primary-600 bg-opacity-90 text-white rounded-lg 
+           hover:bg-primary-500 hover:scale-[1.02]
+           active:scale-[0.98]
+           transition-all duration-200
+           shadow-lg shadow-primary-500/20
+           backdrop-blur-sm;
   }
   
   .btn-secondary {
-    @apply px-4 py-2 bg-secondary-600 text-white rounded-lg hover:bg-secondary-700 transition-colors;
+    @apply px-4 py-2 bg-secondary-600 bg-opacity-90 text-white rounded-lg 
+           hover:bg-secondary-500 hover:scale-[1.02]
+           active:scale-[0.98]
+           transition-all duration-200
+           shadow-lg shadow-secondary-500/20
+           backdrop-blur-sm;
   }
 
   .card {
-    @apply bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow;
+    @apply relative overflow-hidden
+           bg-black bg-opacity-20 backdrop-blur-sm rounded-lg
+           border border-primary-500 border-opacity-20
+           shadow-xl shadow-primary-900/10
+           hover:shadow-primary-900/20 hover:border-opacity-30
+           transition-all duration-300;
+  }
+
+  .card::before {
+    @apply content-[''] absolute -inset-1
+           bg-gradient-to-r from-transparent via-[rgba(14,165,233,0.1)] to-transparent
+           translate-x-[-200%] animate-[shimmer_2s_infinite];
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(200%);
   }
 } 
