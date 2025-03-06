@@ -37,23 +37,14 @@ jobs:
         run: |
           echo "Installing dependencies..."
           npm install
-          echo "Installing Tailwind and PostCSS..."
-          npm install -D tailwindcss@3.4.1 postcss@8.4.33 autoprefixer@10.4.17
+          echo "Installing PostCSS and Tailwind dependencies..."
+          npm install -D tailwindcss@3.4.1 postcss@8.4.33 autoprefixer@10.4.17 postcss-import@16.0.0
           echo "Dependencies installed. Verifying installation..."
-          npm list tailwindcss postcss autoprefixer
+          npm list tailwindcss postcss autoprefixer postcss-import
           echo "Checking node_modules..."
-          ls -la node_modules
-          echo "Checking Tailwind specifically..."
-          find node_modules -name "tailwindcss"
-
-      - name: Setup Tailwind
-        run: |
-          echo "Checking Tailwind config..."
-          test -f tailwind.config.js && echo "Tailwind config exists" || echo "Tailwind config missing"
+          ls -la node_modules/tailwindcss
           echo "Checking PostCSS config..."
-          test -f postcss.config.js && echo "PostCSS config exists" || echo "PostCSS config missing"
-          echo "Current directory contents:"
-          ls -la
+          cat postcss.config.js
 
       - name: Build with Next.js
         run: |
