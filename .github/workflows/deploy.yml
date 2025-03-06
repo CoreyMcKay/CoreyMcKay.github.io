@@ -34,9 +34,17 @@ jobs:
 
       - name: Install dependencies
         run: |
-          rm -rf node_modules
-          rm -f package-lock.json
           npm install
+          npm install -D tailwindcss@latest postcss@latest autoprefixer@latest
+          npm list tailwindcss postcss autoprefixer
+          ls -la src/components/
+
+      - name: Verify paths
+        run: |
+          echo "Checking for Navbar component:"
+          ls -la src/components/Navbar.tsx || echo "Navbar not found"
+          echo "Checking for ThemeProviderWrapper component:"
+          ls -la src/components/ThemeProviderWrapper.tsx || echo "ThemeProviderWrapper not found"
 
       - name: Build with Next.js
         run: |
