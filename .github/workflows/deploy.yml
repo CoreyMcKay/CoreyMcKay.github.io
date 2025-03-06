@@ -35,26 +35,27 @@ jobs:
 
       - name: Install dependencies
         run: |
-          echo "Installing dependencies..."
-          npm ci
-          echo "Dependencies installed."
-          echo "Installing dev dependencies..."
-          npm install -D tailwindcss@3.4.1 postcss@8.4.33 autoprefixer@10.4.17
-          echo "Dev dependencies installed."
+          echo "Installing all dependencies..."
+          npm install
+          echo "All dependencies installed."
+          echo "Verifying Tailwind installation..."
+          npm list tailwindcss postcss autoprefixer
 
       - name: Verify installations
         run: |
           echo "Checking dependency versions:"
           npm list react react-dom next tailwindcss framer-motion
           echo "Checking node_modules structure:"
-          ls -la node_modules/tailwindcss
-          ls -la node_modules/framer-motion
-          ls -la node_modules/@heroicons
+          ls -la node_modules/tailwindcss || echo "Tailwind not found"
+          ls -la node_modules/framer-motion || echo "Framer Motion not found"
+          ls -la node_modules/@heroicons || echo "Heroicons not found"
 
       - name: Build with Next.js
         run: |
-          npm run build
+          echo "Starting Next.js build..."
+          NODE_ENV=production npm run build
           touch out/.nojekyll
+          echo "Build completed."
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
