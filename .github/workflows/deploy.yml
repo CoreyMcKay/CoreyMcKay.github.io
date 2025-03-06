@@ -33,32 +33,22 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
-      - name: Clean install
-        run: |
-          echo "Cleaning node_modules..."
-          rm -rf node_modules
-          rm -f package-lock.json
-
       - name: Install dependencies
         run: |
-          echo "Installing dependencies..."
-          npm install --legacy-peer-deps
-          echo "Installing dev dependencies..."
-          npm install --save-dev --legacy-peer-deps tailwindcss@3.4.1 postcss@8.4.33 autoprefixer@10.4.17 postcss-import@16.0.0
-          echo "Dependencies installed."
+          echo "Installing core dependencies..."
+          npm install --no-package-lock --legacy-peer-deps next@14.1.0 react@18.2.0 react-dom@18.2.0
+          echo "Installing Tailwind and PostCSS..."
+          npm install --no-package-lock --legacy-peer-deps -D tailwindcss@3.4.1 postcss@8.4.33 autoprefixer@10.4.17 postcss-import@16.0.0
+          echo "Installing remaining dependencies..."
+          npm install --no-package-lock --legacy-peer-deps
 
-      - name: Verify Tailwind setup
+      - name: Verify installation
         run: |
-          echo "Verifying Tailwind installation..."
-          npm list tailwindcss
-          echo "Creating Tailwind config if missing..."
-          if [ ! -f tailwind.config.js ]; then
-            npx tailwindcss init
-          fi
-          echo "Checking PostCSS config..."
-          cat postcss.config.js
-          echo "Checking node_modules structure..."
+          echo "Checking installed packages..."
+          npm list tailwindcss postcss autoprefixer
+          echo "Checking node_modules..."
           ls -la node_modules/tailwindcss || echo "Tailwind not found"
+          ls -la node_modules/postcss || echo "PostCSS not found"
 
       - name: Build with Next.js
         run: |
