@@ -40,15 +40,25 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm install --legacy-peer-deps next@latest react@18.2.0 react-dom@18.2.0
-          npm install --legacy-peer-deps -D typescript@latest @types/node@latest @types/react@latest @types/react-dom@latest
-          npm install --legacy-peer-deps -D tailwindcss@latest postcss@latest autoprefixer@latest
-          npm install --legacy-peer-deps -D @heroicons/react@latest framer-motion@latest next-themes@latest
+          npm install --no-package-lock --legacy-peer-deps
+          npm install --no-package-lock --legacy-peer-deps -D tailwindcss@latest postcss@latest autoprefixer@latest
+          npm install --no-package-lock --legacy-peer-deps -D @types/node@latest @types/react@latest @types/react-dom@latest typescript@latest
+          npm install --no-package-lock --legacy-peer-deps -D eslint@latest eslint-config-next@latest @typescript-eslint/eslint-plugin@latest @typescript-eslint/parser@latest
+
+      - name: Create Tailwind config if missing
+        run: |
+          if [ ! -f tailwind.config.js ]; then
+            npx tailwindcss init -p
+          fi
 
       - name: Verify installations
         run: |
           echo "Checking dependency versions:"
           npm list react react-dom next tailwindcss framer-motion
+          echo "Checking node_modules structure:"
+          ls -la node_modules/tailwindcss
+          ls -la node_modules/framer-motion
+          ls -la node_modules/@heroicons
 
       - name: Build with Next.js
         run: |
