@@ -33,24 +33,14 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
-      - name: Clean install
-        run: |
-          rm -rf node_modules
-          rm -f package-lock.json
-
       - name: Install dependencies
         run: |
-          npm install --no-package-lock --legacy-peer-deps
-          npm install --no-package-lock --legacy-peer-deps -D tailwindcss@latest postcss@latest autoprefixer@latest
-          npm install --no-package-lock --legacy-peer-deps -D @types/node@latest @types/react@latest @types/react-dom@latest typescript@latest
-          npm install --no-package-lock --legacy-peer-deps -D eslint@latest eslint-config-next@latest @typescript-eslint/eslint-plugin@latest @typescript-eslint/parser@latest
-
-      - name: Setup Tailwind
-        run: |
-          echo "Creating Tailwind config..."
-          npx tailwindcss init -p
-          echo "Tailwind config created."
-          cat tailwind.config.js
+          echo "Installing dependencies..."
+          npm ci
+          echo "Dependencies installed."
+          echo "Installing dev dependencies..."
+          npm install -D tailwindcss@3.4.1 postcss@8.4.33 autoprefixer@10.4.17
+          echo "Dev dependencies installed."
 
       - name: Verify installations
         run: |
