@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Corey McKay</title>
+    <link rel="stylesheet" href="../styles/main.css">
+    <link rel="stylesheet" href="../styles/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">CM Admin</div>
+        <div class="nav-links">
+            <button onclick="showSection('blogs')" class="active">Blogs</button>
+            <button onclick="showSection('projects')">Projects</button>
+            <button onclick="showSection('memes')">Memes</button>
+        </div>
+        <button onclick="logout()" class="btn secondary">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+    </nav>
+
+    <main class="dashboard-container">
+        <!-- Blog Management Section -->
+        <section id="blogs" class="content-section active">
+            <div class="section-header">
+                <h1>Manage Blog Posts</h1>
+                <button onclick="showAddForm('blog')" class="btn primary">
+                    <i class="fas fa-plus"></i> New Blog Post
+                </button>
+            </div>
+            
+            <div id="blogList" class="content-list">
+                <!-- Blog posts will be loaded here -->
+            </div>
+
+            <!-- Add/Edit Blog Form -->
+            <div id="blogForm" class="edit-form hidden">
+                <h2>Add/Edit Blog Post</h2>
+                <form id="editBlogForm" onsubmit="return saveBlogPost(event)">
+                    <div class="input-group">
+                        <label for="blogTitle">Title</label>
+                        <input type="text" id="blogTitle" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="blogTag">Category Tag</label>
+                        <input type="text" id="blogTag" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="blogDate">Date</label>
+                        <input type="date" id="blogDate" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="blogSummary">Summary</label>
+                        <textarea id="blogSummary" required></textarea>
+                    </div>
+                    <div class="input-group">
+                        <label for="blogContent">Full Content</label>
+                        <textarea id="blogContent" required></textarea>
+                    </div>
+                    <div class="form-buttons">
+                        <button type="submit" class="btn primary">Save</button>
+                        <button type="button" onclick="hideForm('blog')" class="btn secondary">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Projects Management Section -->
+        <section id="projects" class="content-section">
+            <div class="section-header">
+                <h1>Manage Projects</h1>
+                <button onclick="showAddForm('project')" class="btn primary">
+                    <i class="fas fa-plus"></i> New Project
+                </button>
+            </div>
+            
+            <div id="projectList" class="content-list">
+                <!-- Projects will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Memes Management Section -->
+        <section id="memes" class="content-section">
+            <div class="section-header">
+                <h1>Manage Memes</h1>
+                <button onclick="showAddForm('meme')" class="btn primary">
+                    <i class="fas fa-plus"></i> New Meme
+                </button>
+            </div>
+            
+            <div id="memeList" class="content-list">
+                <!-- Memes will be loaded here -->
+            </div>
+        </section>
+    </main>
+
+    <div class="matrix-bg"></div>
+    <script src="config.js"></script>
+    <script src="../scripts/admin.js"></script>
+</body>
+</html> 

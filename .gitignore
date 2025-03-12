@@ -11,6 +11,7 @@ backup_files/
 tsconfig.json
 package.json
 package-lock.json
+admin/config.js
 
 # Environment files
 .env*
