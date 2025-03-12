@@ -11,12 +11,23 @@ async function hashPassword(password) {
     return hashHex;
 }
 
+// Helper function to get base path
+function getBasePath() {
+    // Check if we're in the admin directory
+    if (window.location.pathname.includes('/admin/')) {
+        return '../';
+    }
+    return './';
+}
+
 // Check if logged in
 function checkAuth() {
     const isLoggedIn = localStorage.getItem('adminLoggedIn');
-    if (!isLoggedIn && !window.location.pathname.endsWith('index.html')) {
-        window.location.href = 'index.html';
-    } else if (isLoggedIn && window.location.pathname.endsWith('index.html')) {
+    const currentPath = window.location.pathname;
+    
+    if (!isLoggedIn && !currentPath.includes('/admin/index.html')) {
+        window.location.href = getBasePath() + 'admin/index.html';
+    } else if (isLoggedIn && currentPath.includes('/admin/index.html')) {
         window.location.href = 'dashboard.html';
     }
 }
