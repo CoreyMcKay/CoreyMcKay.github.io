@@ -31,7 +31,7 @@ async function login(event) {
         const expiryTime = Date.now() + (2 * 60 * 60 * 1000);
         localStorage.setItem('adminLoggedIn', 'true');
         localStorage.setItem('sessionExpiry', expiryTime);
-        window.location.href = 'dashboard.html';
+        window.location.href = '/admin/dashboard.html';
     } else {
         alert('Incorrect password');
         // Clear the password field
