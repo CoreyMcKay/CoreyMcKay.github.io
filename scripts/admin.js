@@ -25,9 +25,9 @@ function checkAuth() {
     const isLoggedIn = localStorage.getItem('adminLoggedIn');
     const currentPath = window.location.pathname;
     
-    if (!isLoggedIn && !currentPath.includes('/admin/index') && !currentPath.includes('/admin$')) {
+    if (!isLoggedIn && !currentPath.includes('/admin/index.html')) {
         window.location.href = getBasePath() + 'admin/index.html';
-    } else if (isLoggedIn && (currentPath.includes('/admin/index') || currentPath.includes('/admin$'))) {
+    } else if (isLoggedIn && currentPath.includes('/admin/index.html')) {
         window.location.href = 'dashboard.html';
     }
 }
