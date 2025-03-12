@@ -14,10 +14,10 @@ async function hashPassword(password) {
 // Check if logged in
 function checkAuth() {
     const isLoggedIn = localStorage.getItem('adminLoggedIn');
-    if (!isLoggedIn && !window.location.pathname.endsWith('/admin/index.html')) {
-        window.location.href = '/admin/index.html';
-    } else if (isLoggedIn && window.location.pathname.endsWith('/admin/index.html')) {
-        window.location.href = '/admin/dashboard.html';
+    if (!isLoggedIn && !window.location.pathname.endsWith('index.html')) {
+        window.location.href = 'index.html';
+    } else if (isLoggedIn && window.location.pathname.endsWith('index.html')) {
+        window.location.href = 'dashboard.html';
     }
 }
 
@@ -32,7 +32,7 @@ async function login(event) {
         const expiryTime = Date.now() + (2 * 60 * 60 * 1000);
         localStorage.setItem('adminLoggedIn', 'true');
         localStorage.setItem('sessionExpiry', expiryTime);
-        window.location.href = '/admin/dashboard.html';
+        window.location.href = 'dashboard.html';
     } else {
         alert('Incorrect password');
         // Clear the password field
