@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; script-src 'self' 'unsafe-inline'">
     <title>Admin - Corey McKay</title>
     <link rel="stylesheet" href="../styles/main.css">
     <link rel="stylesheet" href="../styles/admin.css">
@@ -12,10 +13,10 @@
     <div class="admin-container">
         <div class="login-card">
             <h1><i class="fas fa-lock"></i> Admin Login</h1>
-            <form id="loginForm" onsubmit="return login(event)">
+            <form id="loginForm">
                 <div class="input-group">
                     <label for="password">Password</label>
-                    <input type="password" id="password" required>
+                    <input type="password" id="password" required autocomplete="current-password">
                 </div>
                 <button type="submit" class="btn primary">Login</button>
             </form>
@@ -23,7 +24,12 @@
     </div>
 
     <div class="matrix-bg"></div>
-    <script src="./config.js"></script>
     <script src="../scripts/admin.js"></script>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await login(e);
+        });
+    </script>
 </body>
 </html> 

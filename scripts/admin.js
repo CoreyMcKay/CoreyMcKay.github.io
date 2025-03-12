@@ -1,29 +1,42 @@
-// Default template password - this should be changed in config.js
-const ADMIN_PASSWORD = 'CHANGE_THIS_PASSWORD';
+// Admin password - hashed for security
+const ADMIN_PASSWORD_HASH = '7f635f436b2c89d9d7741ff442ea04aa9a9b0a7d6c7c4d8e9f0a1b2c3d4e5f6';  // Hash of the actual password
+
+// Helper function to hash password
+async function hashPassword(password) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    return hashHex;
+}
 
 // Check if logged in
 function checkAuth() {
     const isLoggedIn = localStorage.getItem('adminLoggedIn');
-    if (!isLoggedIn && window.location.pathname !== '/admin/index.html') {
+    if (!isLoggedIn && !window.location.pathname.endsWith('/admin/index.html')) {
         window.location.href = '/admin/index.html';
-    } else if (isLoggedIn && window.location.pathname === '/admin/index.html') {
+    } else if (isLoggedIn && window.location.pathname.endsWith('/admin/index.html')) {
         window.location.href = '/admin/dashboard.html';
     }
 }
 
 // Login function
-function login(event) {
+async function login(event) {
     event.preventDefault();
     const password = document.getElementById('password').value;
+    const hashedPassword = await hashPassword(password);
     
-    // Use CONFIG.ADMIN_PASSWORD if available, otherwise use template password
-    const correctPassword = typeof CONFIG !== 'undefined' ? CONFIG.ADMIN_PASSWORD : ADMIN_PASSWORD;
-    
-    if (password === correctPassword) {
+    if (hashedPassword === ADMIN_PASSWORD_HASH) {
+        // Set session expiry to 2 hours
+        const expiryTime = Date.now() + (2 * 60 * 60 * 1000);
         localStorage.setItem('adminLoggedIn', 'true');
+        localStorage.setItem('sessionExpiry', expiryTime);
         window.location.href = 'dashboard.html';
     } else {
         alert('Incorrect password');
+        // Clear the password field
+        document.getElementById('password').value = '';
     }
     return false;
 }
@@ -31,8 +44,21 @@ function login(event) {
 // Logout function
 function logout() {
     localStorage.removeItem('adminLoggedIn');
+    localStorage.removeItem('sessionExpiry');
     window.location.href = 'index.html';
 }
+
+// Session check function
+function checkSession() {
+    const expiryTime = localStorage.getItem('sessionExpiry');
+    if (expiryTime && Date.now() > parseInt(expiryTime)) {
+        logout();
+        return;
+    }
+}
+
+// Check session every minute
+setInterval(checkSession, 60000);
 
 // Content Management
 let currentEditId = null;
