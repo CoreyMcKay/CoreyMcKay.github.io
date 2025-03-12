@@ -1,5 +1,5 @@
-// Admin password - hashed for security
-const ADMIN_PASSWORD_HASH = '7f635f436b2c89d9d7741ff442ea04aa9a9b0a7d6c7c4d8e9f0a1b2c3d4e5f6';  // Hash of CyberSec2024!@#
+// Admin password - plain text for testing
+const ADMIN_PASSWORD = 'CyberSec2024!@#';
 
 // Helper function to hash password
 async function hashPassword(password) {
@@ -25,9 +25,8 @@ function checkAuth() {
 async function login(event) {
     event.preventDefault();
     const password = document.getElementById('password').value;
-    const hashedPassword = await hashPassword(password);
     
-    if (hashedPassword === ADMIN_PASSWORD_HASH) {
+    if (password === ADMIN_PASSWORD) {
         // Set session expiry to 2 hours
         const expiryTime = Date.now() + (2 * 60 * 60 * 1000);
         localStorage.setItem('adminLoggedIn', 'true');
