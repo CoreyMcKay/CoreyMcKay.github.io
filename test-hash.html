@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Hash</title>
+</head>
+<body>
+    <div id="output"></div>
+    <script>
+        async function hashPassword(password) {
+            console.log('Input password:', password);
+            const encoder = new TextEncoder();
+            const data = encoder.encode(password);
+            console.log('Encoded data:', data);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            console.log('Final hash:', hashHex);
+            console.log('Expected hash:', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92');
+            console.log('Hash matches expected:', hashHex === '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92');
+            return hashHex;
+        }
+
+        async function test() {
+            const hash = await hashPassword('CyberSec2024!@#');
+            document.getElementById('output').innerHTML = `
+                <p>Password: CyberSec2024!@#</p>
+                <p>Generated Hash: ${hash}</p>
+                <p>Expected Hash: 8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92</p>
+            `;
+        }
+
+        test();
+    </script>
+</body>
+</html> 

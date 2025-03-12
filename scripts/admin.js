@@ -3,11 +3,16 @@ const ADMIN_PASSWORD_HASH = '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca120
 
 // Helper function to hash password
 async function hashPassword(password) {
+    console.log('Input password:', password);
     const encoder = new TextEncoder();
     const data = encoder.encode(password);
+    console.log('Encoded data:', data);
     const hashBuffer = await crypto.subtle.digest('SHA-256', data);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    console.log('Generated hash:', hashHex);
+    console.log('Stored hash:', ADMIN_PASSWORD_HASH);
+    console.log('Hash matches:', hashHex === ADMIN_PASSWORD_HASH);
     return hashHex;
 }
 
