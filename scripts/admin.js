@@ -1,5 +1,5 @@
 // Admin password - hashed for security
-const ADMIN_PASSWORD_HASH = '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92';  // Hash of CyberSec2024!@#
+const ADMIN_PASSWORD_HASH = '3e717afc7cefe7157fb90832cfd727428b02992b5b00224f4ca5c427cea4babe';  // Hash of CyberSec2024!@#
 
 // Helper function to hash password
 async function hashPassword(password) {
