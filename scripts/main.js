@@ -73,4 +73,88 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             behavior: 'smooth'
         });
     });
+});
+
+// Load and display content from JSON files
+async function loadContent(type) {
+    try {
+        const response = await fetch(`data/${type}.json`);
+        const data = await response.json();
+        const container = document.getElementById(`${type}Container`);
+        
+        if (!container) return;
+        
+        if (type === 'blogs') {
+            container.innerHTML = data.posts.map(post => `
+                <article class="blog-card">
+                    <div class="blog-card-header">
+                        <span class="tag">${post.tag}</span>
+                        <h2>${post.title}</h2>
+                        <span class="date">${post.date}</span>
+                    </div>
+                    <p>${post.summary}</p>
+                    <a href="#" class="read-more" onclick="showBlogPost('${encodeURIComponent(JSON.stringify(post))}')">
+                        Read More <i class="fas fa-arrow-right"></i>
+                    </a>
+                </article>
+            `).join('');
+        } else if (type === 'projects') {
+            container.innerHTML = data.projects.map(project => `
+                <article class="project-card">
+                    <div class="project-card-header">
+                        <span class="tag">${project.tag}</span>
+                        <h2>${project.title}</h2>
+                        <span class="date">${project.date}</span>
+                    </div>
+                    <p>${project.summary}</p>
+                    <div class="project-links">
+                        <a href="${project.link}" target="_blank" class="btn primary">View Project</a>
+                        <a href="${project.github}" target="_blank" class="btn secondary">GitHub</a>
+                    </div>
+                </article>
+            `).join('');
+        } else if (type === 'memes') {
+            container.innerHTML = data.memes.map(meme => `
+                <article class="meme-card">
+                    <div class="meme-card-header">
+                        <span class="tag">${meme.tag}</span>
+                        <h2>${meme.title}</h2>
+                        <span class="date">${meme.date}</span>
+                    </div>
+                    <img src="${meme.imageUrl}" alt="${meme.title}" class="meme-image">
+                    <p>${meme.description}</p>
+                </article>
+            `).join('');
+        }
+    } catch (error) {
+        console.error(`Error loading ${type}:`, error);
+    }
+}
+
+// Show full blog post
+function showBlogPost(postData) {
+    const post = JSON.parse(decodeURIComponent(postData));
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="tag">${post.tag}</span>
+                <h2>${post.title}</h2>
+                <span class="date">${post.date}</span>
+            </div>
+            <div class="modal-body">
+                ${post.content}
+            </div>
+            <button onclick="this.parentElement.parentElement.remove()" class="btn secondary">Close</button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+
+// Initialize content loading
+document.addEventListener('DOMContentLoaded', () => {
+    loadContent('blogs');
+    loadContent('projects');
+    loadContent('memes');
 }); 
