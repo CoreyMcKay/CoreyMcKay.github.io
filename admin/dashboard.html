@@ -79,6 +79,41 @@
             <div id="projectList" class="content-list">
                 <!-- Projects will be loaded here -->
             </div>
+
+            <!-- Add/Edit Project Form -->
+            <div id="projectForm" class="edit-form hidden">
+                <h2>Add/Edit Project</h2>
+                <form id="editProjectForm" onsubmit="return saveProjectPost(event)">
+                    <div class="input-group">
+                        <label for="projectTitle">Title</label>
+                        <input type="text" id="projectTitle" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="projectTag">Technology Tag</label>
+                        <input type="text" id="projectTag" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="projectDate">Completion Date</label>
+                        <input type="date" id="projectDate" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="projectSummary">Summary</label>
+                        <textarea id="projectSummary" required></textarea>
+                    </div>
+                    <div class="input-group">
+                        <label for="projectLink">Project Link</label>
+                        <input type="url" id="projectLink" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="projectGithub">GitHub Link</label>
+                        <input type="url" id="projectGithub" required>
+                    </div>
+                    <div class="form-buttons">
+                        <button type="submit" class="btn primary">Save</button>
+                        <button type="button" onclick="hideForm('project')" class="btn secondary">Cancel</button>
+                    </div>
+                </form>
+            </div>
         </section>
 
         <!-- Memes Management Section -->
@@ -92,6 +127,37 @@
             
             <div id="memeList" class="content-list">
                 <!-- Memes will be loaded here -->
+            </div>
+
+            <!-- Add/Edit Meme Form -->
+            <div id="memeForm" class="edit-form hidden">
+                <h2>Add/Edit Meme</h2>
+                <form id="editMemeForm" onsubmit="return saveMemePost(event)">
+                    <div class="input-group">
+                        <label for="memeTitle">Title</label>
+                        <input type="text" id="memeTitle" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="memeTag">Category</label>
+                        <input type="text" id="memeTag" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="memeDate">Date</label>
+                        <input type="date" id="memeDate" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="memeDescription">Description</label>
+                        <textarea id="memeDescription" required></textarea>
+                    </div>
+                    <div class="input-group">
+                        <label for="memeImageUrl">Image URL</label>
+                        <input type="url" id="memeImageUrl" required>
+                    </div>
+                    <div class="form-buttons">
+                        <button type="submit" class="btn primary">Save</button>
+                        <button type="button" onclick="hideForm('meme')" class="btn secondary">Cancel</button>
+                    </div>
+                </form>
             </div>
         </section>
     </main>

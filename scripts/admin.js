@@ -208,6 +208,106 @@ function updateBlogPage(posts) {
     localStorage.setItem('blogPageContent', blogContent);
 }
 
+// Save Project Post
+function saveProjectPost(event) {
+    event.preventDefault();
+    
+    const project = {
+        title: document.getElementById('projectTitle').value,
+        tag: document.getElementById('projectTag').value,
+        date: document.getElementById('projectDate').value,
+        summary: document.getElementById('projectSummary').value,
+        link: document.getElementById('projectLink').value,
+        github: document.getElementById('projectGithub').value
+    };
+    
+    let projects = JSON.parse(localStorage.getItem('projects') || '[]');
+    
+    if (currentEditId !== null) {
+        projects[currentEditId] = project;
+    } else {
+        projects.push(project);
+    }
+    
+    localStorage.setItem('projects', JSON.stringify(projects));
+    
+    // Update the projects.html file content
+    updateProjectsPage(projects);
+    
+    hideForm('project');
+    loadContent('projects');
+    return false;
+}
+
+// Save Meme Post
+function saveMemePost(event) {
+    event.preventDefault();
+    
+    const meme = {
+        title: document.getElementById('memeTitle').value,
+        tag: document.getElementById('memeTag').value,
+        date: document.getElementById('memeDate').value,
+        description: document.getElementById('memeDescription').value,
+        imageUrl: document.getElementById('memeImageUrl').value
+    };
+    
+    let memes = JSON.parse(localStorage.getItem('memes') || '[]');
+    
+    if (currentEditId !== null) {
+        memes[currentEditId] = meme;
+    } else {
+        memes.push(meme);
+    }
+    
+    localStorage.setItem('memes', JSON.stringify(memes));
+    
+    // Update the memes.html file content
+    updateMemesPage(memes);
+    
+    hideForm('meme');
+    loadContent('memes');
+    return false;
+}
+
+// Update Projects Page
+function updateProjectsPage(projects) {
+    const projectsContent = projects.map(project => `
+        <article class="project-card">
+            <div class="project-card-header">
+                <span class="tag">${project.tag}</span>
+                <h2>${project.title}</h2>
+                <span class="date">${project.date}</span>
+            </div>
+            <p>${project.summary}</p>
+            <div class="project-links">
+                <a href="${project.link}" target="_blank" class="btn primary">View Project</a>
+                <a href="${project.github}" target="_blank" class="btn secondary">GitHub</a>
+            </div>
+        </article>
+    `).join('');
+    
+    // Store in localStorage for now
+    localStorage.setItem('projectsPageContent', projectsContent);
+}
+
+// Update Memes Page
+function updateMemesPage(memes) {
+    const memesContent = memes.map(meme => `
+        <article class="meme-card">
+            <div class="meme-card-header">
+                <span class="tag">${meme.tag}</span>
+                <h2>${meme.title}</h2>
+                <span class="date">${meme.date}</span>
+            </div>
+            <img src="${meme.imageUrl}" alt="${meme.title}" class="meme-image">
+            <p>${meme.description}</p>
+        </article>
+    `).join('');
+    
+    // Store in localStorage for now
+    localStorage.setItem('memesPageContent', memesContent);
+}
+
 // Initialize
 checkAuth();
 if (window.location.pathname.includes('dashboard.html')) {
