@@ -19,9 +19,17 @@
   /* ── Mobile menu ── */
   const hamburger = document.getElementById('hamburger');
   const menuLinks = document.querySelector('.menu-links');
-  hamburger.addEventListener('click', () => menuLinks.classList.toggle('open'));
+  hamburger.addEventListener('click', () => {
+    const open = menuLinks.classList.toggle('open');
+    hamburger.textContent = open ? '\u2715' : '\u2630';
+    hamburger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  });
   menuLinks.querySelectorAll('a').forEach(a =>
-    a.addEventListener('click', () => menuLinks.classList.remove('open'))
+    a.addEventListener('click', () => {
+      menuLinks.classList.remove('open');
+      hamburger.textContent = '\u2630';
+      hamburger.setAttribute('aria-label', 'Open menu');
+    })
   );
 
   /* ── Toast ── */
