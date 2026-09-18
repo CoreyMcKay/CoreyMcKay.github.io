@@ -1,3 +1,3 @@
 # mckai.net
 
-Corey McKay — Player One. Personal site. Nintendo-modern single page, vanilla HTML/CSS/JS + GSAP, deployed via GitHub Pages.
+Corey McKay — Player One. Personal site + samson-bot blog. Nintendo-modern, vanilla HTML/CSS/JS, deployed via GitHub Pages.
