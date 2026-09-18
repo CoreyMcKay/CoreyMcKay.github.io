@@ -49,17 +49,20 @@
     revealEls.forEach(el => el.classList.add('in'));
   } else {
     // Hero: stagger in right away so nothing ever sits invisible
-    document.querySelectorAll('.hero-inner .reveal').forEach((el, i) => {
+    // (covers both the home page hero and the blog hero)
+    const heroReveals = document.querySelectorAll('.hero-inner .reveal, .blog-hero .reveal');
+    heroReveals.forEach((el, i) => {
       el.style.transitionDelay = (0.08 + i * 0.09).toFixed(2) + 's';
       requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('in')));
     });
-    // Sections: reveal as they scroll into view
+    // Everything else: reveal as it scrolls into view
+    const heroSet = new Set(heroReveals);
     const revealIO = new IntersectionObserver(entries => {
       entries.forEach(e => {
         if (e.isIntersecting) { e.target.classList.add('in'); revealIO.unobserve(e.target); }
       });
     }, { threshold: 0.1, rootMargin: '0px 0px -6% 0px' });
-    document.querySelectorAll('main .reveal, footer .reveal').forEach(el => revealIO.observe(el));
+    revealEls.forEach(el => { if (!heroSet.has(el)) revealIO.observe(el); });
   }
 
   /* ── Stat bars fill on scroll ── */
