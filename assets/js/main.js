@@ -42,25 +42,24 @@
     toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2600);
   }
 
-  /* ── GSAP reveals ── */
+  /* ── Scroll reveals (no library — pure CSS + IntersectionObserver) ── */
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (window.gsap && !reduceMotion) {
-    gsap.registerPlugin(ScrollTrigger);
-    // Hero entrance
-    gsap.from('.hero-inner .reveal', {
-      y: 40, opacity: 0, duration: 0.9, stagger: 0.12, ease: 'back.out(1.6)', delay: 0.15,
-      onComplete: () => document.querySelectorAll('.hero-inner .reveal').forEach(el => el.style.opacity = 1)
-    });
-    // Section reveals
-    document.querySelectorAll('main .reveal, footer .reveal').forEach(el => {
-      gsap.fromTo(el, { y: 44, opacity: 0 }, {
-        y: 0, opacity: 1, duration: 0.8, ease: 'power3.out',
-        scrollTrigger: { trigger: el, start: 'top 88%' }
-      });
-    });
+  const revealEls = document.querySelectorAll('.reveal');
+  if (reduceMotion) {
+    revealEls.forEach(el => el.classList.add('in'));
   } else {
-    // No animation: just show everything
-    document.querySelectorAll('.reveal').forEach(el => { el.style.opacity = 1; });
+    // Hero: stagger in right away so nothing ever sits invisible
+    document.querySelectorAll('.hero-inner .reveal').forEach((el, i) => {
+      el.style.transitionDelay = (0.08 + i * 0.09).toFixed(2) + 's';
+      requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('in')));
+    });
+    // Sections: reveal as they scroll into view
+    const revealIO = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('in'); revealIO.unobserve(e.target); }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -6% 0px' });
+    document.querySelectorAll('main .reveal, footer .reveal').forEach(el => revealIO.observe(el));
   }
 
   /* ── Stat bars fill on scroll ── */
