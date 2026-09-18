@@ -53,7 +53,8 @@
     const heroReveals = document.querySelectorAll('.hero-inner .reveal, .blog-hero .reveal');
     heroReveals.forEach((el, i) => {
       el.style.transitionDelay = (0.08 + i * 0.09).toFixed(2) + 's';
-      requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('in')));
+      // setTimeout, not rAF: also fires in background/headless tabs
+      setTimeout(() => el.classList.add('in'), 60);
     });
     // Everything else: reveal as it scrolls into view
     const heroSet = new Set(heroReveals);
