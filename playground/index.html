@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Samson Playground — mckai.net</title>
+  <meta name="description" content="The Samson Playground — pixel AI cats at play. You hold the laser pointer." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #14131f; --panel: #1d1c2e; --ink: #f5f0e6; --ink-soft: #a9a4c0;
+      --red: #ff5d5d; --gold: #ffd23f; --line: #2e2c4a;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--bg); color: var(--ink);
+      font-family: 'Nunito', sans-serif; min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 1.25rem 1rem 2rem; overflow-x: hidden;
+    }
+    h1, .hud, .cat-name { font-family: 'Bungee', cursive; }
+    .topbar { width: 100%; max-width: 1060px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+    .topbar a.logo { color: var(--ink); text-decoration: none; font-family: 'Bungee', cursive; font-size: 1rem; }
+    .topbar a.logo span { color: var(--red); }
+    .topbar a.home { color: var(--ink-soft); text-decoration: none; font-weight: 800; font-size: 0.9rem; }
+    .topbar a.home:hover { color: var(--gold); }
+    header { text-align: center; margin-bottom: 1rem; }
+    header h1 { font-size: clamp(1.6rem, 5vw, 2.6rem); letter-spacing: 0.04em; }
+    header h1 .star { color: var(--gold); }
+    header p { color: var(--ink-soft); font-weight: 600; margin-top: 0.4rem; }
+    header p b { color: var(--red); }
+    .hud {
+      display: flex; gap: 1.5rem; margin-bottom: 0.9rem; font-size: 0.95rem;
+      background: var(--panel); border: 3px solid var(--line); border-radius: 14px;
+      padding: 0.6rem 1.4rem;
+    }
+    .hud span b { color: var(--gold); }
+    #arena {
+      position: relative; width: 100%; max-width: 1060px; height: 62vh; min-height: 380px;
+      background:
+        radial-gradient(2px 2px at 12% 30%, #4a4870 50%, transparent 51%),
+        radial-gradient(2px 2px at 68% 12%, #56548a 50%, transparent 51%),
+        radial-gradient(3px 3px at 84% 66%, #3c3a5e 50%, transparent 51%),
+        radial-gradient(2px 2px at 32% 78%, #56548a 50%, transparent 51%),
+        radial-gradient(2px 2px at 48% 8%, #3c3a5e 50%, transparent 51%),
+        radial-gradient(3px 3px at 5% 60%, #4a4870 50%, transparent 51%),
+        radial-gradient(2px 2px at 92% 38%, #56548a 50%, transparent 51%),
+        var(--panel);
+      border: 4px solid var(--line); border-radius: 18px; overflow: hidden;
+      cursor: none; touch-action: none; user-select: none; -webkit-user-select: none;
+    }
+    .cat { position: absolute; width: 110px; will-change: transform; pointer-events: none; z-index: 2; }
+    .cat img {
+      width: 100%; display: block; mix-blend-mode: screen;
+      animation: bob 1.6s ease-in-out infinite;
+    }
+    @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+    .cat-name {
+      position: absolute; top: -1.35rem; left: 50%; transform: translateX(-50%);
+      font-size: 0.62rem; letter-spacing: 0.08em; color: var(--ink-soft); white-space: nowrap;
+    }
+    #laser {
+      position: absolute; width: 14px; height: 14px; border-radius: 50%;
+      background: var(--red); box-shadow: 0 0 12px 4px rgba(255, 93, 93, 0.85);
+      transform: translate(-50%, -50%); pointer-events: none; z-index: 5; display: none;
+    }
+    .yarn {
+      position: absolute; width: 34px; height: 34px; border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #ff9db0, #e0497f 70%);
+      border: 3px solid #8f2450; z-index: 1; pointer-events: none;
+      transform: translate(-50%, -50%);
+    }
+    .yarn::after {
+      content: ""; position: absolute; inset: 4px; border-radius: 50%;
+      border: 3px solid transparent; border-top-color: #8f2450; border-left-color: #8f2450;
+      transform: rotate(35deg);
+    }
+    .pop {
+      position: absolute; font-family: 'Bungee', cursive; color: var(--gold);
+      font-size: 1.1rem; pointer-events: none; z-index: 6;
+      animation: rise 0.9s ease-out forwards; transform: translate(-50%, -50%);
+    }
+    @keyframes rise { to { transform: translate(-50%, -160%); opacity: 0; } }
+    .hint { margin-top: 0.9rem; color: var(--ink-soft); font-weight: 600; font-size: 0.92rem; text-align: center; }
+    .hint b { color: var(--ink); }
+    footer { margin-top: 1.6rem; color: var(--ink-soft); font-size: 0.8rem; font-weight: 600; text-align: center; }
+    footer a { color: var(--gold); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <a class="logo" href="../"><span>CM</span> PLAYER ONE</a>
+    <a class="home" href="../">← back to mckai.net</a>
+  </div>
+
+  <header>
+    <h1><span class="star">★</span> SAMSON PLAYGROUND <span class="star">★</span></h1>
+    <p>The resident AI cats are at play. <b>You</b> hold the laser pointer.</p>
+  </header>
+
+  <div class="hud">
+    <span>LASER CATCHES: <b id="catches">0</b></span>
+    <span>YARN TOSSED: <b id="yarns">0</b></span>
+  </div>
+
+  <div id="arena" aria-label="Playground arena"></div>
+
+  <p class="hint"><b>Move</b> to aim the laser &nbsp;·&nbsp; <b>click / tap</b> to toss yarn &nbsp;·&nbsp; cats can't resist either</p>
+
+  <footer>No quarters were harmed · <a href="../">mckai.net</a></footer>
+
+  <script>
+    const arena = document.getElementById('arena');
+    const catchesEl = document.getElementById('catches');
+    const yarnsEl = document.getElementById('yarns');
+
+    const DEFS = [
+      { name: 'PIXEL',  src: '../assets/images/playground/cat-orange.webp', speed: 62 },
+      { name: 'BYTE',   src: '../assets/images/playground/cat-black.webp',  speed: 74 },
+      { name: 'CACHE',  src: '../assets/images/playground/cat-gray.webp',   speed: 55 },
+      { name: 'WIDGET', src: '../assets/images/playground/cat-cream.webp',  speed: 68 },
+    ];
+    const M = 60; // wall margin
+    let W = 0, H = 0;
+    const measure = () => { W = arena.clientWidth; H = arena.clientHeight; };
+    measure(); addEventListener('resize', measure);
+
+    const rnd = (a, b) => a + Math.random() * (b - a);
+    const dist = (ax, ay, bx, by) => Math.hypot(ax - bx, ay - by);
+
+    const cats = DEFS.map(d => {
+      const el = document.createElement('div');
+      el.className = 'cat';
+      el.innerHTML = `<span class="cat-name">${d.name}</span><img src="${d.src}" alt="${d.name} the pixel cat" draggable="false">`;
+      arena.appendChild(el);
+      const c = { el, img: el.querySelector('img'), x: rnd(M, 0), y: 0, tx: 0, ty: 0,
+                  speed: d.speed, retarget: 0, pounce: 0, face: 1 };
+      c.x = rnd(M, 300); c.y = rnd(M, 300);
+      newWander(c);
+      return c;
+    });
+
+    function newWander(c) {
+      c.tx = rnd(M, Math.max(M + 1, W - M));
+      c.ty = rnd(M, Math.max(M + 1, H - M));
+      c.retarget = rnd(2.5, 6);
+    }
+
+    const laserEl = document.createElement('div');
+    laserEl.id = 'laser';
+    arena.appendChild(laserEl);
+    const laser = { x: -99, y: -99, on: false, cd: 0 };
+    let catches = 0, yarnCount = 0;
+    const yarns = [];
+
+    function arenaPos(e) {
+      const r = arena.getBoundingClientRect();
+      return { x: e.clientX - r.left, y: e.clientY - r.top };
+    }
+    arena.addEventListener('pointermove', e => {
+      const p = arenaPos(e);
+      laser.x = p.x; laser.y = p.y; laser.on = true;
+      laserEl.style.display = 'block';
+      laserEl.style.left = p.x + 'px'; laserEl.style.top = p.y + 'px';
+    });
+    arena.addEventListener('pointerleave', () => { laser.on = false; laserEl.style.display = 'none'; });
+    arena.addEventListener('pointerdown', e => {
+      const p = arenaPos(e);
+      spawnYarn(p.x, p.y);
+      laser.x = p.x; laser.y = p.y; laser.on = true;
+      laserEl.style.display = 'block';
+      laserEl.style.left = p.x + 'px'; laserEl.style.top = p.y + 'px';
+    });
+
+    function spawnYarn(x, y) {
+      const el = document.createElement('div');
+      el.className = 'yarn';
+      arena.appendChild(el);
+      yarns.push({ el, x, y, vx: rnd(-160, 160), vy: rnd(-160, 160), life: 12 });
+      yarnCount++; yarnsEl.textContent = yarnCount;
+    }
+
+    function pop(x, y, txt) {
+      const el = document.createElement('div');
+      el.className = 'pop'; el.textContent = txt;
+      el.style.left = x + 'px'; el.style.top = y + 'px';
+      arena.appendChild(el);
+      setTimeout(() => el.remove(), 950);
+    }
+
+    let last = performance.now();
+    function frame(now) {
+      const dt = Math.min(0.05, (now - last) / 1000);
+      last = now;
+      if (laser.cd > 0) laser.cd -= dt;
+
+      // yarn physics
+      for (let i = yarns.length - 1; i >= 0; i--) {
+        const g = yarns[i];
+        g.life -= dt;
+        if (g.life <= 0) { g.el.remove(); yarns.splice(i, 1); continue; }
+        const damp = Math.pow(0.12, dt);
+        g.vx *= damp; g.vy *= damp;
+        g.x += g.vx * dt; g.y += g.vy * dt;
+        if (g.x < 20) { g.x = 20; g.vx *= -0.6; }
+        if (g.x > W - 20) { g.x = W - 20; g.vx *= -0.6; }
+        if (g.y < 20) { g.y = 20; g.vy *= -0.6; }
+        if (g.y > H - 20) { g.y = H - 20; g.vy *= -0.6; }
+        g.el.style.left = g.x + 'px'; g.el.style.top = g.y + 'px';
+        if (g.life < 2) g.el.style.opacity = g.life / 2;
+      }
+
+      for (const c of cats) {
+        // pick target: yarn > laser > wander
+        let tgt = null, boost = 1;
+        let best = 1e9;
+        for (const g of yarns) {
+          const d = dist(c.x, c.y, g.x, g.y);
+          if (d < best) { best = d; tgt = g; }
+        }
+        if (tgt) {
+          boost = 1.5;
+          if (best < 34) { // bat the yarn!
+            tgt.vx = (tgt.x - c.x) * 6 + rnd(-120, 120);
+            tgt.vy = (tgt.y - c.y) * 6 + rnd(-120, 120);
+            c.pounce = 0.45; pop(tgt.x, tgt.y - 30, 'bap!');
+            tgt = null;
+          }
+        } else if (laser.on && laser.cd <= 0) {
+          const d = dist(c.x, c.y, laser.x, laser.y);
+          if (d < 300) { tgt = laser; boost = 1.7; }
+          if (d < 30) { // caught the dot
+            catches++; catchesEl.textContent = catches;
+            c.pounce = 0.5; pop(laser.x, laser.y - 24, '+1');
+            laser.cd = 0.9;
+            laser.x = rnd(M, Math.max(M + 1, W - M));
+            laser.y = rnd(M, Math.max(M + 1, H - M));
+            laserEl.style.left = laser.x + 'px'; laserEl.style.top = laser.y + 'px';
+          }
+        }
+        if (!tgt) {
+          c.retarget -= dt;
+          if (c.retarget <= 0 || dist(c.x, c.y, c.tx, c.ty) < 12) newWander(c);
+          tgt = { x: c.tx, y: c.ty };
+        }
+
+        const dx = tgt.x - c.x, dy = tgt.y - c.y;
+        const d = Math.hypot(dx, dy) || 1;
+        const sp = c.speed * boost;
+        c.x += (dx / d) * sp * dt;
+        c.y += (dy / d) * sp * dt;
+        c.x = Math.max(30, Math.min(W - 30, c.x));
+        c.y = Math.max(50, Math.min(H - 30, c.y));
+        if (Math.abs(dx) > 6) c.face = dx > 0 ? 1 : -1;
+
+        let py = 0, sc = 1;
+        if (c.pounce > 0) {
+          c.pounce -= dt;
+          const k = 1 - Math.max(0, c.pounce) / 0.5;
+          py = -34 * Math.sin(Math.PI * k); sc = 1 + 0.12 * Math.sin(Math.PI * k);
+        }
+        c.el.style.transform =
+          `translate(${c.x - 55}px, ${c.y - 40 + py}px) scaleX(${c.face * sc}) scaleY(${sc})`;
+      }
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  </script>
+</body>
+</html>
