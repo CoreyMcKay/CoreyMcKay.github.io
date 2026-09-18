@@ -184,7 +184,7 @@ img { max-width: 100%; display: block; }
 }
 
 /* ── Player profile ──────────────────────── */
-.profile-grid { display: grid; grid-template-columns: 320px 1fr; gap: 2rem; align-items: start; }
+.profile-grid { display: grid; grid-template-columns: 320px 320px 1fr; gap: 2rem; align-items: start; }
 
 .char-card {
   background: var(--card); border: 3px solid var(--ink);
