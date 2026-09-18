@@ -241,6 +241,8 @@ img { max-width: 100%; display: block; }
 .cart-orca { background: linear-gradient(135deg, #1a73e8, #6ab4ff); }
 .cart-detect { background: linear-gradient(135deg, var(--red), #ff6b6b); }
 .cart-soar { background: linear-gradient(135deg, #7b2ff7, #b388ff); }
+.cart-versus { background: linear-gradient(135deg, #d32f2f, #1a73e8); }
+.cart-cub { background: linear-gradient(135deg, #f7e3b0, #dfa248); }
 .cart-body { padding: 1.5rem; display: flex; flex-direction: column; gap: 0.7rem; flex: 1; }
 .cart-meta { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
 .genre { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.15em; background: var(--ink); color: var(--paper); padding: 0.25rem 0.7rem; border-radius: 999px; }
