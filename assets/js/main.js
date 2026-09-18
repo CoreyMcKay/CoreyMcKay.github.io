@@ -90,6 +90,7 @@
   /* ── Fake terminal ── */
   const screen = document.getElementById('termScreen');
   const input = document.getElementById('termInput');
+  const hasTerminal = !!(screen && input);
 
   function print(html, cls) {
     const div = document.createElement('div');
@@ -131,7 +132,7 @@
     sudo: () => '<span class="warn">nice try.</span>',
   };
 
-  print('player-one shell v1.0 — type <span class="cmd">help</span> to begin', 'dim');
+  if (hasTerminal) print('player-one shell v1.0 — type <span class="cmd">help</span> to begin', 'dim');
 
   function run(cmdRaw) {
     const cmd = cmdRaw.trim().toLowerCase();
@@ -142,11 +143,11 @@
     print(fn ? fn().replace(/\n/g, '<br>') : `<span class="warn">command not found: ${cmd.replace(/</g, '&lt;')} — try help</span>`);
   }
 
-  input.addEventListener('keydown', e => {
+  if (hasTerminal) input.addEventListener('keydown', e => {
     if (e.key === 'Enter') { run(input.value); input.value = ''; }
   });
   // Clicking the terminal focuses the input
-  document.querySelector('.terminal').addEventListener('click', () => input.focus());
+  if (hasTerminal) document.querySelector('.terminal').addEventListener('click', () => input.focus());
 
   /* ── Konami code easter egg ── */
   const KONAMI = ['arrowup', 'arrowup', 'arrowdown', 'arrowdown', 'arrowleft', 'arrowright', 'arrowleft', 'arrowright', 'b', 'a'];
@@ -180,7 +181,7 @@
           unlocked = true;
           confetti();
           toast('CHEAT ACTIVATED: +30 LIVES ★');
-          print('konami accepted. <span class="cmd">+30 lives.</span> use them wisely.', 'warn');
+          if (hasTerminal) print('konami accepted. <span class="cmd">+30 lives.</span> use them wisely.', 'warn');
         } else {
           toast('ALREADY AT MAX LIVES ★');
         }
