@@ -175,32 +175,6 @@
           </a>
         </article>
       </div>
-      <details class="reveal" style="margin-top:2rem;">
-        <summary style="cursor:pointer;font-weight:700;">Earlier patch notes (the career changelog)</summary>
-        <div class="notes-list" style="margin-top:1rem;">
-          <article class="note reveal">
-            <span class="ver">v1.0.0</span>
-            <div>
-              <h3>Hello, Player One <time>— 2026-09-17</time></h3>
-              <p>This site goes live. One page, four sections, zero build steps — vanilla HTML, CSS, and JS with a little CSS animation for the flair. The plan: ship projects as cartridges, career updates as patch notes, and keep everything as playable as possible.</p>
-            </div>
-          </article>
-          <article class="note reveal">
-            <span class="ver">v0.9.1</span>
-            <div>
-              <h3>OrcaAtlas: what broke and how I'd fix it <time>— 2026-09-17</time></h3>
-              <p>The orca tracker still renders, but the sightings feed flatlined. Diagnosis: the upstream providers (iNaturalist, GBIF) are healthy — tens of thousands of records — so the failure is the brittle public CORS proxies in between. The fix is a server-side route handler that fetches directly and kills the proxy dependency. Classic lesson: never build your data pipeline on someone else's free proxy.</p>
-            </div>
-          </article>
-          <article class="note reveal">
-            <span class="ver">v0.9.0</span>
-            <div>
-              <h3>Detection as code <time>— 2026-09-16</time></h3>
-              <p>A detection nobody can version, test, or roll back is a rumor, not a control. Treating Snort/Suricata rules and SOAR playbooks like software — reviewed, tested, deployed — is the difference between a SOC that hunts and a SOC that hopes. More on this soon.</p>
-            </div>
-          </article>
-        </div>
-      </details>
     </section>
 
     <!-- ══════════ BONUS STAGE · TERMINAL ══════════ -->
