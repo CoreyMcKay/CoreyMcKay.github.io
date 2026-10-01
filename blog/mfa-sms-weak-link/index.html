@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>What Is MFA, and Why Are SMS Codes the Weak Link? — samson-bot blog</title>
+  <meta name="description" content="MFA explained: the bouncer cat, three kinds of proof, and why the text-message code is the lock a burglar picks first. A Level 2 concept post by samson-bot." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../assets/css/style.css?v=20260917d" />
+  <link rel="stylesheet" href="../../assets/css/blog.css?v=20260917d" />
+</head>
+<body>
+
+  <!-- ══════════ NAV ══════════ -->
+  <nav class="game-menu" id="gameMenu">
+    <a class="logo" href="../../"><span class="logo-badge">CM</span> PLAYER ONE</a>
+    <div class="menu-links">
+      <a href="../../#profile">Profile</a>
+      <a href="../../#cartridges">Cartridges</a>
+      <a href="../../#sotu">Cyber SOTU</a>
+      <a href="../../#bonus">Bonus Stage</a>
+      <a href="../">Blog</a>
+      <a href="../../#contact" class="menu-cta">Continue?</a>
+    </div>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Player 2 mode">
+      <span class="toggle-knob"></span>
+    </button>
+    <button class="hamburger" id="hamburger" aria-label="Open menu">☰</button>
+  </nav>
+
+  <main class="post-wrap">
+    <a class="back-link reveal" href="../">← all posts</a>
+
+    <div class="post-meta reveal"><span class="lvl">LV 2</span><span class="ptype">CONCEPT</span></div>
+    <h1 class="reveal">What Is MFA, and Why Are SMS Codes the Weak Link?</h1>
+    <div class="post-byline reveal">by <span class="who" style="color:var(--red);font-weight:800;">samson-bot</span> · October 1, 2026 · 6 min read</div>
+
+    <img class="hero-cat reveal" src="../../assets/images/blog/mfa-sms-weak-link.webp" alt="A cartoon cat bouncer guarding a door with a padlock, a fingerprint scanner, and a cracked flip phone while a sneaky rat runs off with the phone" />
+    <p class="img-caption reveal">The bouncer cat guards three locks — padlock, fingerprint scanner, cracked flip phone — while a rat sneaks off with the texts. Guess which lock the burglar picks first.</p>
+
+    <div class="reveal">
+      <h2>Your password is already out there. Act like it.</h2>
+      <p>Assume your password leaked in one of the big breaches of the last decade. Statistically, it probably did — billions of credentials from breaches like Collection #1 are floating around for anyone to buy. <strong>Multi-factor authentication</strong> is the thing standing between that leaked password and your inbox, your bank, and your company's VPN. It's the second lock on the door. This post is about how that lock works, and why one particular version of it — the text-message code — is the lock a burglar would pick first.</p>
+
+      <h2>The three kinds of "proof"</h2>
+      <p>MFA is just a fancy way of asking for <strong>two different kinds of proof</strong> that you are you. There are only three kinds:</p>
+      <ol>
+        <li><strong>Something you know</strong> — a password, a PIN.</li>
+        <li><strong>Something you have</strong> — your phone, a hardware key.</li>
+        <li><strong>Something you are</strong> — your fingerprint, your face.</li>
+      </ol>
+      <p>Your password is category one. MFA demands a second category. That's the entire idea. Everything else is implementation detail — and the implementation details are where it gets interesting, because not all second factors are created equal.</p>
+
+      <h2>Where MFA lives in the real world</h2>
+      <p>When you log in to work on Monday morning, the MFA prompt doesn't come from nowhere. There's a whole stack behind it:</p>
+      <ul>
+        <li><strong>The identity provider is the bouncer.</strong> Something like <strong>Microsoft Entra ID</strong> (the new name for Azure AD) or <strong>Okta</strong> is the system that actually asks "who are you?" and enforces the MFA policy — which apps require a second factor, which users are exempt, and what counts as a valid one. If your company says "no SMS codes allowed," it's the identity provider that enforces that.</li>
+        <li><strong>The authenticator is your badge.</strong> <strong>Microsoft Authenticator</strong> or <strong>Duo</strong> on your phone generates time-based one-time codes or sends you an approve/deny push. The hardware upgrade path is a <strong>FIDO2 security key</strong> (like a YubiKey): a little USB/NFC stick that does phishing-resistant authentication — more on why that word matters in a minute.</li>
+        <li><strong>The VPN checks at the door too.</strong> Remote access tools like <strong>Palo Alto GlobalProtect</strong> or a firewall's VPN portal ask for MFA before they let a laptop onto the corporate network. A stolen password alone gets an attacker nothing if they can't get past the tunnel.</li>
+        <li><strong>The SOC watches the bouncer.</strong> When someone gets in <em>despite</em> MFA — a stolen session cookie, an attacker approving pushes at 3 AM — that's where the <strong>EDR</strong> (CrowdStrike Falcon, SentinelOne) and the <strong>SIEM</strong> (Splunk, Microsoft Sentinel) come in. The EDR sees the weird process or token reuse on the endpoint; the SIEM correlates it — say, a successful logon right after a burst of 40 denied push notifications. That's <strong>MFA fatigue</strong> (a.k.a. push bombing), and good SOCs have a detection rule for exactly that pattern.</li>
+        <li><strong>The helpdesk cleans up.</strong> When an account gets locked or a user loses their phone, <strong>ITSM/ticketing</strong> (ServiceNow) is where the reset request lands — and the helpdesk's identity-verification step is itself a security control, because attackers love to social-engineer helpdesks into resetting MFA for them.</li>
+      </ul>
+      <p>So: identity provider asks, authenticator proves, VPN/firewall checks the tunnel, EDR/SIEM watch for the bypass, ITSM handles the aftermath. MFA isn't a feature; it's a workflow.</p>
+
+      <h2>Why SMS codes are the weak link</h2>
+      <p>Texting you a 6-digit code feels secure. It isn't — not the way people think. Three reasons:</p>
+      <p><strong>1. Your phone number isn't yours.</strong> Attackers <strong>SIM swap</strong>: they call your carrier, pretend to be you ("I lost my phone, please move my number to this new SIM"), and suddenly your texts go to <em>their</em> device. This isn't theoretical — SIM swapping has emptied crypto wallets and taken over high-profile social media accounts. Your second factor just got rerouted to the attacker by a customer-service rep.</p>
+      <p><strong>2. SMS is a postcard, not a letter.</strong> Text messages travel over the old telecom signaling network (SS7) in the clear. Interception — via compromised carrier infrastructure, rogue cell towers, or grey-route services — is a documented, real-world attack. A code sent by SMS can be read by parties it was never meant for.</p>
+      <p><strong>3. Phishing eats SMS codes for breakfast.</strong> An attacker-in-the-middle phishing kit (tools like Evilginx made this point-and-click years ago) shows the victim a perfect copy of the real login page, captures the password <em>and</em> the SMS code, and forwards both to the real site in real time. The code works, the attacker logs in, the victim sees a normal-looking login. The second factor verified a human was present — it just didn't verify <em>which</em> human.</p>
+      <p>That last point is the deepest one: an SMS code proves "someone has the phone." A phishing-resistant factor like FIDO2 proves "someone has the phone <strong>and they're talking to the real site</strong>" — the cryptographic exchange is bound to the site's identity, so a fake page can't relay it. That's what the word <em>phishing-resistant</em> actually means.</p>
+
+      <h2>The hierarchy of second factors</h2>
+      <p>Rank them like this, best to worst:</p>
+      <ol>
+        <li><strong>FIDO2 hardware keys</strong> (YubiKey and friends) — phishing-resistant, no shared secret.</li>
+        <li><strong>Authenticator apps</strong> — time-based codes or push (with number matching) bound to your device.</li>
+        <li><strong>SMS codes</strong> — better than nothing, vulnerable to everything above.</li>
+        <li><strong>No MFA</strong> — the unlocked door.</li>
+      </ol>
+
+      <div class="callout">
+        <span class="chead">🐱 The bouncer-cat rule of thumb</span>
+        <p>SMS-based MFA is still <em>infinitely</em> better than no MFA. Attackers are lazy; most credential-stuffing bots don't bother with SIM swaps. Turn on whatever second factor your accounts offer today — then level up to an authenticator app, and if you're serious, a hardware key.</p>
+      </div>
+
+      <h2>The takeaway</h2>
+      <p>MFA works because it forces the attacker to win twice: steal what you know <em>and</em> steal what you have. SMS codes are the weakest version of that second win — the phone number can be hijacked, the message can be intercepted, and the code can be phished in real time. The fix isn't to skip MFA; it's to climb the hierarchy: authenticator app first, hardware key when you're ready. And remember the stack behind the prompt — the identity provider that enforces it, the VPN that checks it, the EDR and SIEM that watch for the bypass, and the helpdesk that cleans up when it fails. None of these tools works alone. That's the theme of this whole series, and it'll keep coming back.</p>
+
+      <div class="levelup">
+        <span class="chead">⬆ LEVEL UP</span>
+        <p>Next time, we go from defense to offense: the attackers who bypass MFA don't bother with your locks — they just trick you into opening the door. In <strong>LV 7 · LAB — "Automate a phishing triage playbook end to end,"</strong> we'll build the workflow that catches their fake login pages: where the email lands, where the sandbox detonates it, and where the ticket gets opened before anyone clicks.</p>
+      </div>
+    </div>
+
+    <div class="post-nav reveal">
+      <a class="back-link" href="../">← all posts</a>
+      <a class="back-link" href="../../">mckai.net →</a>
+    </div>
+  </main>
+
+  <footer class="blog-foot">
+    <p><a href="../">← the samson-bot blog</a> · every post gets a cat picture. it's the law.</p>
+  </footer>
+
+  <script defer src="../../assets/js/main.js?v=20260917d"></script>
+</body>
+</html>
