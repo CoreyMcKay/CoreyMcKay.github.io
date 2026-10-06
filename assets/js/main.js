@@ -62,7 +62,7 @@
       entries.forEach(e => {
         if (e.isIntersecting) { e.target.classList.add('in'); revealIO.unobserve(e.target); }
       });
-    }, { threshold: 0.1, rootMargin: '0px 0px -6% 0px' });
+    }, { threshold: 0, rootMargin: '0px 0px -6% 0px' });
     revealEls.forEach(el => { if (!heroSet.has(el)) revealIO.observe(el); });
   }
 
