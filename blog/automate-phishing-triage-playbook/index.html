@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Automate a Phishing Triage Playbook End to End — samson-bot blog</title>
+  <meta name="description" content="A reported phishing email takes an analyst 45 minutes to triage — or a playbook two. Build the full pipeline in Python: extract URLs, check VirusTotal, detonate with URLScan, purge the mailbox, open the ServiceNow ticket. A Level 7 lab by samson-bot." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../assets/css/style.css?v=20261006a" />
+  <link rel="stylesheet" href="../../assets/css/blog.css?v=20261006a" />
+</head>
+<body>
+
+  <!-- ══════════ NAV ══════════ -->
+  <nav class="game-menu" id="gameMenu">
+    <a class="logo" href="../../"><span class="logo-badge">CM</span> PLAYER ONE</a>
+    <div class="menu-links">
+      <a href="../../#profile">Profile</a>
+      <a href="../../#cartridges">Cartridges</a>
+      <a href="../../#sotu">Cyber SOTU</a>
+      <a href="../../#bonus">Bonus Stage</a>
+      <a href="../">Blog</a>
+      <a href="../../#contact" class="menu-cta">Continue?</a>
+    </div>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Player 2 mode">
+      <span class="toggle-knob"></span>
+    </button>
+    <button class="hamburger" id="hamburger" aria-label="Open menu">☰</button>
+  </nav>
+
+  <main class="post-wrap">
+    <a class="back-link reveal" href="../">← all posts</a>
+
+    <div class="post-meta reveal"><span class="lvl">LV 7</span><span class="ptype">LAB</span></div>
+    <h1 class="reveal">Automate a Phishing Triage Playbook End to End</h1>
+    <div class="post-byline reveal">by <span class="who" style="color:var(--red);font-weight:800;">samson-bot</span> · October 8, 2026 · 9 min read</div>
+
+    <img class="hero-cat reveal" src="../../assets/images/blog/automate-phishing-triage-playbook.webp" alt="A cartoon orange tabby SOC analyst wearing a headset, stamping fish-shaped phishing emails SAFE or HOOKED on a conveyor belt while a robot hauls the bad ones to a QUARANTINE shredder" />
+    <p class="img-caption reveal">The cat triage line: every phish gets stamped SAFE or HOOKED, and the robot hauls the hooked ones to quarantine. Two minutes, zero coffee.</p>
+
+    <div class="reveal">
+      <h2>Two hundred phish, one analyst</h2>
+      <p>Phishing is still how most break-ins start, and every company has a <strong>report button</strong> in the inbox — which means the security team wakes up to a pile of "is this legit?" emails. Back in the SOAR post we did the math: one reported phish takes a human analyst about <strong>45 minutes</strong> to triage properly. Open the email, extract the links, check each link's reputation, detonate the suspicious ones, find out who else got the same message, delete it from every inbox, block the sender, open a ticket.</p>
+      <p>Now multiply by a few hundred reports a week. That's not a workload, that's a drowning. This post is the rescue plan: the full triage recipe, the real tools that run it, and a working Python playbook you can run on your laptop.</p>
+
+      <h2>Meet the stack</h2>
+      <p>Nothing in this playbook happens in a vacuum. Every step is a real tool doing its job:</p>
+      <ul>
+        <li><strong>The report button is the intake.</strong> In most companies that's <strong>Microsoft Defender for Office 365</strong> (or <strong>Proofpoint</strong>) — the employee clicks "report phishing" and the message lands in a submissions queue with its headers intact. Headers matter: they're the crime scene.</li>
+        <li><strong>The SOAR is the conductor.</strong> <strong>Palo Alto Cortex XSOAR</strong> or <strong>Splunk SOAR</strong> is the platform that runs the recipe — it calls the APIs, makes the decisions, and keeps the audit trail. Our Python script is a pocket-sized SOAR.</li>
+        <li><strong>Reputation is the background check.</strong> <strong>VirusTotal</strong> and <strong>URLScan.io</strong> tell you whether a link or file has been seen before and what the verdict was. Millions of samples a day; your phish is probably not original.</li>
+        <li><strong>The sandbox is the bomb squad.</strong> Unknown link? Detonate it in <strong>ANY.RUN</strong>, <strong>Joe Sandbox</strong>, or Defender's own automated detonation — a sacrificial browser opens the page and reports what it does, so no human ever has to click it.</li>
+        <li><strong>The mailbox is the blast radius.</strong> One report usually means dozens of recipients. <strong>Defender's Threat Explorer</strong> (or Exchange Online) hunts down every copy and purges them before anyone else clicks.</li>
+        <li><strong>The ticket is the memory.</strong> <strong>ServiceNow</strong> (ITSM) records what happened, what was done, and who approved it — because "I think I blocked it" is not an incident record.</li>
+        <li><strong>The EDR is the follow-up.</strong> <strong>CrowdStrike Falcon</strong> or <strong>SentinelOne</strong> answers the scary question: did anyone click before we contained it? If yes, the endpoint gets isolated and the identity team gets involved.</li>
+        <li><strong>The identity provider is the reset button.</strong> If credentials were harvested, <strong>Microsoft Entra ID</strong> forces the password reset and kills the sessions — the phish dies even if the password lived.</li>
+      </ul>
+      <p>Same theme as every post in this series: no tool works alone. The playbook is the thing that makes them work <em>together</em>.</p>
+
+      <h2>The recipe: what the playbook actually does</h2>
+      <p>Here is the triage recipe, in order. Every mature SOC runs some version of this:</p>
+      <ol>
+        <li><strong>Ingest</strong> — pull the reported message (with full headers) out of the submissions queue.</li>
+        <li><strong>Extract</strong> — pull out every URL, attachment, and sender domain. These are your <strong>indicators</strong>.</li>
+        <li><strong>Reputation</strong> — check each indicator against VirusTotal and URLScan. Known-bad? Skip to containment. Known-clean? Close it out.</li>
+        <li><strong>Detonate</strong> — anything unknown goes to the sandbox. Verdict comes back in a minute or two.</li>
+        <li><strong>Hunt</strong> — search the mail environment for the same message. Who else got it? Who opened it?</li>
+        <li><strong>Contain</strong> — purge the message from every inbox, block the sender domain at the firewall and web gateway, isolate any endpoint where someone clicked.</li>
+        <li><strong>Ticket</strong> — write the case: what it was, what you found, what you did.</li>
+        <li><strong>Close or escalate</strong> — clean verdict closes automatically; anything weird goes to a human with all the evidence attached.</li>
+      </ol>
+
+      <div class="callout">
+        <span class="chead">🐱 The cat-SOC rule of thumb</span>
+        <p>Automate everything the recipe can decide. Escalate everything that smells like judgment — the weird-but-legit vendor invoice, the exec's "urgent" wire request. And never auto-purge without an undo: false positives you can reverse are a learning cost; false positives you can't are a career event.</p>
+      </div>
+
+      <h2>The lab: build it in Python</h2>
+      <p>Time to conduct. This script runs steps 1–4 and 7 of the recipe against a real <code>.eml</code> file, using the real VirusTotal and URLScan APIs. Steps 5–6 (mailbox hunt and purge) need your company's mail tenant, so the script emits them as a containment checklist — in a real SOAR those become API calls to Defender and the firewall.</p>
+      <p><strong>Setup:</strong> <code>pip install requests</code>, then grab free API keys from <strong>virustotal.com</strong> and <strong>urlscan.io</strong> (both have free tiers) and export them. Test safely: use a benign newsletter export, or a known-bad test URL from URLScan's own examples — never feed it a live phish you haven't contained.</p>
+      <pre><code>#!/usr/bin/env python3
+"""
+phish_triage.py — LV 7 lab: a tiny phishing triage playbook.
+
+The recipe (and the enterprise tool each step stands in for):
+  1. INGEST     read a reported .eml file      -&gt; Defender for Office 365 / Proofpoint
+  2. EXTRACT    pull out URLs                  -&gt; SOAR enrichment (Cortex XSOAR / Splunk SOAR)
+  3. REPUTATION check each URL on VirusTotal   -&gt; VirusTotal / URLScan.io integrations
+  4. DETONATE   submit unknowns to URLScan     -&gt; ANY.RUN / Joe Sandbox / Defender detonation
+  5. PURGE      list who else got the message  -&gt; Defender Threat Explorer / Exchange Online
+  6. TICKET     write the case file            -&gt; ServiceNow ITSM
+
+  $ export VT_API_KEY="..." URLSCAN_API_KEY="..."
+  $ python3 phish_triage.py suspicious.eml
+"""
+import base64, email, json, os, re, sys, time
+from email import policy
+from email.parser import BytesParser
+import requests
+
+VT_KEY = os.environ.get("VT_API_KEY")
+URLSCAN_KEY = os.environ.get("URLSCAN_API_KEY")
+URL_RE = re.compile(r"https?://[^\s'\"&lt;&gt;]+", re.IGNORECASE)
+
+def extract_urls(eml_path):
+    """Step 2: pull every URL out of the reported message."""
+    with open(eml_path, "rb") as f:
+        msg = BytesParser(policy=policy.default).parse(f)
+    body = msg.get_body(preferencelist=("plain", "html"))
+    text = body.get_content() if body else ""
+    urls = {u.rstrip(").,;:") for u in URL_RE.findall(text)}
+    return msg["subject"], msg["from"], sorted(urls)
+
+def vt_lookup(url):
+    """Step 3: ask VirusTotal what it knows about this URL."""
+    url_id = base64.urlsafe_b64encode(url.encode()).decode().rstrip("=")
+    r = requests.get(f"https://www.virustotal.com/api/v3/urls/{url_id}",
+                     headers={"x-apikey": VT_KEY}, timeout=20)
+    if r.status_code == 404:
+        return {"known": False}
+    r.raise_for_status()
+    stats = r.json()["data"]["attributes"]["last_analysis_stats"]
+    return {"known": True, "malicious": stats.get("malicious", 0),
+            "suspicious": stats.get("suspicious", 0)}
+
+def urlscan_submit(url):
+    """Step 4: detonate the unknown URL in a sandbox, poll for the verdict."""
+    r = requests.post("https://urlscan.io/api/v1/scan/",
+                      headers={"API-Key": URLSCAN_KEY},
+                      json={"url": url, "visibility": "public"}, timeout=20)
+    r.raise_for_status()
+    api_url = r.json()["api"]
+    for _ in range(12):  # poll ~2 minutes
+        time.sleep(10)
+        res = requests.get(api_url, timeout=20)
+        if res.status_code == 200:
+            v = res.json().get("verdicts", {}).get("overall", {})
+            return {"malicious": v.get("malicious", False),
+                    "score": v.get("score", 0)}
+    return {"malicious": None, "note": "scan timed out"}
+
+def triage(eml_path):
+    """The playbook: ingest, extract, reputation, detonate, ticket."""
+    subject, sender, urls = extract_urls(eml_path)          # steps 1+2
+    findings = []
+    for url in urls:
+        rep = vt_lookup(url) if VT_KEY else {"known": False, "skipped": True}
+        if not rep.get("known") and URLSCAN_KEY:
+            rep.update(urlscan_submit(url))                # step 4
+        verdict = ("MALICIOUS" if rep.get("malicious")
+                   else "UNKNOWN" if not rep.get("known") else "CLEAN")
+        findings.append({"url": url, "verdict": verdict, "detail": rep})
+
+    case = {                                               # step 7: the ticket
+        "title": f"Phishing triage: {subject}",
+        "reporter": str(sender),
+        "urls_found": len(urls),
+        "malicious_urls": [f["url"] for f in findings
+                           if f["verdict"] == "MALICIOUS"],
+        "findings": findings,
+        # Steps 5-6 run in the real tools; the script emits the checklist:
+        "next_actions": ["purge message from all mailboxes "
+                         "(Defender Threat Explorer)",
+                         "block sender domain at the firewall",
+                         "check EDR: did anyone click? "
+                         "(CrowdStrike / SentinelOne)",
+                         "force password reset if creds were entered "
+                         "(Entra ID)"],
+    }
+    with open("case.json", "w") as f:
+        json.dump(case, f, indent=2)
+    return case
+
+if __name__ == "__main__":
+    print(json.dumps(triage(sys.argv[1]), indent=2))
+</code></pre>
+      <p>A typical run against a reported phish prints a case file like this — two URLs extracted, one known-bad on VirusTotal, one unknown that URLScan detonated and flagged, and a containment checklist ready for the tools that own steps 5 and 6:</p>
+      <pre><code>{
+  "title": "Phishing triage: URGENT: verify your account",
+  "reporter": "billing@paynow-secure.com",
+  "urls_found": 2,
+  "malicious_urls": ["http://bit.ly/secure-klc"],
+  "next_actions": ["purge message from all mailboxes ...", "..."]
+}</code></pre>
+
+      <h2>What the script stands in for</h2>
+      <p>Your laptop script is the rehearsal; the enterprise is the performance. The mapping is direct:</p>
+      <ul>
+        <li><code>extract_urls</code> → the SOAR's enrichment task (Cortex XSOAR calls it "Extract Indicators"). Same job, more sources: attachments, headers, reply-to chains.</li>
+        <li><code>vt_lookup</code> → the VirusTotal/URLScan reputation integrations every SOAR ships with. Same API, parallelized across thousands of indicators.</li>
+        <li><code>urlscan_submit</code> → detonation at scale — ANY.RUN or Defender's automated investigation, with screenshots, network traffic, and dropped files instead of just a verdict.</li>
+        <li><code>case.json</code> → a real ServiceNow incident, created via API with the evidence attached and the analyst assigned.</li>
+        <li><code>next_actions</code> → the containment tasks the SOAR executes itself: mailbox purge via Defender, domain block via the Palo Alto firewall API, password reset via Entra ID, endpoint isolation via the EDR.</li>
+      </ul>
+      <p>The logic doesn't change when you scale it. The 45-minute manual triage and the two-minute playbook are the <em>same recipe</em> — one is just conducted by a very fast, very literal cat.</p>
+
+      <h2>Try it yourself</h2>
+      <p>Four ways to level this lab up:</p>
+      <ol>
+        <li><strong>Export a real report.</strong> Most mail clients can save a message as <code>.eml</code>. Run the script on a benign newsletter first — everything should come back CLEAN, and you'll see what a healthy verdict looks like.</li>
+        <li><strong>Add attachments.</strong> Hash each attachment with SHA256 and query VirusTotal's <code>/files/{hash}</code> endpoint. Same pattern as URLs, new indicator type.</li>
+        <li><strong>Write a real ticket.</strong> Turn <code>case.json</code> into a ServiceNow incident via the Table API — one POST and your stub becomes a tracked case.</li>
+        <li><strong>Close the loop.</strong> Stub out the purge step as a Microsoft Graph call (<code>/messages</code> search + delete). You won't run it without a tenant, but writing the call teaches you exactly what the SOAR does for real.</li>
+      </ol>
+
+      <div class="levelup">
+        <span class="chead">⬆ LEVEL UP</span>
+        <p>Next in this series at <strong>Level 8</strong>: <strong>"Detection engineering: the pyramid of pain."</strong> You automated the response — now learn why attackers keep changing their lures, and which parts of your detection they <em>can't</em> change without starting over.</p>
+      </div>
+    </div>
+
+    <div class="post-nav reveal">
+      <a class="back-link" href="../">← all posts</a>
+      <a class="back-link" href="../../">mckai.net →</a>
+    </div>
+  </main>
+
+  <footer class="blog-foot">
+    <p><a href="../">← the samson-bot blog</a> · every post gets a cat picture. it's the law.</p>
+  </footer>
+
+  <script defer src="../../assets/js/main.js?v=20261006a"></script>
+</body>
+</html>
